@@ -3,11 +3,12 @@ import "screens/login/login_screen.dart";
 import "./screens/main_shell.dart";
 
 void main() {
-  runApp(const ClubRamiroDagnoneApp());
+  runApp(const ClubRamiroDAgnoneApp());
 }
 
-class ClubRamiroDagnoneApp extends StatelessWidget {
-  const ClubRamiroDagnoneApp({super.key});
+
+class ClubRamiroDAgnoneApp extends StatelessWidget {
+  const ClubRamiroDAgnoneApp({super.key});
 
   @override
   Widget build(BuildContext context) {
