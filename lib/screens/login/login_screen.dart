@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "../main_shell.dart";
+import "register_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Alternative flow 1 of CU-01: empty fields, nothing is sent to the backend.
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _errorMessage = "You must enter your email and password");
+      setState(() => _errorMessage = "Tenes que ingresar tu email y contraseña");
       return;
     }
 
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: "Password",
+                      labelText: "Contraseña",
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -97,7 +98,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: _onLoginPressed,
-                    child: const Text("LOG IN"),
+                    child: const Text("Iniciar Sesión"),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                    ),
+                    child: const Text("¿Todavía no tenes cuenta? ¡Registráte!"),
                   ),
                 ],
               ),
