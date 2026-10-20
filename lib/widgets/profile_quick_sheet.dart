@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import '../models/reservation.dart';
-import '../theme/app_theme.dart';
+import "package:flutter/material.dart";
+import "../models/user.dart";
+import "../theme/app_theme.dart";
 
 Future<void> showProfileQuickSheet(
   BuildContext context, {
-  required UserProfile user,
+  required User user,
   required VoidCallback onFullProfile,
   required VoidCallback onMyReservations,
   required VoidCallback onLogout,
@@ -48,9 +48,14 @@ Future<void> showProfileQuickSheet(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${user.firstName} ${user.lastName}',
-                            style: Theme.of(context).textTheme.titleMedium),
-                        Text(user.email, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                        Text(
+                          user.fullName,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          user.email,
+                          style: const TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
                       ],
                     ),
                   ),
@@ -59,7 +64,7 @@ Future<void> showProfileQuickSheet(
               const SizedBox(height: 16),
               ListTile(
                 leading: const Icon(Icons.person_outline),
-                title: const Text('Perfil completo'),
+                title: const Text("Perfil completo"),
                 onTap: () {
                   Navigator.pop(context);
                   onFullProfile();
@@ -67,7 +72,7 @@ Future<void> showProfileQuickSheet(
               ),
               ListTile(
                 leading: const Icon(Icons.event_note_outlined),
-                title: const Text('Mis reservas'),
+                title: const Text("Mis reservas"),
                 onTap: () {
                   Navigator.pop(context);
                   onMyReservations();
@@ -75,7 +80,7 @@ Future<void> showProfileQuickSheet(
               ),
               ListTile(
                 leading: Icon(Icons.logout, color: AppTheme.danger),
-                title: Text('Cerrar sesión', style: TextStyle(color: AppTheme.danger)),
+                title: Text("Cerrar sesión", style: TextStyle(color: AppTheme.danger)),
                 onTap: () {
                   Navigator.pop(context);
                   onLogout();

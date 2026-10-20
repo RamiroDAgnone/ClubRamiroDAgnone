@@ -40,32 +40,7 @@ class Venue {
   });
 }
 
-class UserProfile {
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String membershipStatus;
-
-  const UserProfile({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.membershipStatus,
-  });
-
-  String get initials =>
-      "${firstName.isNotEmpty ? firstName[0] : ""}${lastName.isNotEmpty ? lastName[0] : ""}"
-          .toUpperCase();
-}
-
 // ---- MOCK DATA (borrar cuando conectes la API) ----
-
-const mockUser = UserProfile(
-  firstName: "Ramiro",
-  lastName: "D'Agnone",
-  email: "ramiro.dagnone@gmail.com",
-  membershipStatus: "Miembro activo",
-);
 
 final mockReservations = <Reservation>[
   Reservation(

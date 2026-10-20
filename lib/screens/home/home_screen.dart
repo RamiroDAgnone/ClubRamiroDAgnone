@@ -4,6 +4,8 @@ import "../../theme/app_theme.dart";
 import "../../widgets/reservation_card.dart";
 import "../../widgets/venue_quick_card.dart";
 import "../../widgets/profile_quick_sheet.dart";
+import "../../utils/session.dart";
+import "../../models/user.dart";
 
 class HomeScreen extends StatelessWidget {
   // Callbacks para navegar a otras tabs sin acoplar el Home a la lógica del shell.
@@ -11,8 +13,11 @@ class HomeScreen extends StatelessWidget {
   final VoidCallback? onGoToSedes;
   final VoidCallback? onGoToPerfil;
 
+  final User user;
+
   const HomeScreen({
     super.key,
+    required this.user,
     this.onGoToReservas,
     this.onGoToSedes,
     this.onGoToPerfil,
@@ -20,7 +25,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = mockUser;
     final reservations = mockReservations;
     final venues = mockVenues;
 
@@ -47,9 +51,7 @@ class HomeScreen extends StatelessWidget {
                       user: user,
                       onFullProfile: () => onGoToPerfil?.call(),
                       onMyReservations: () => onGoToReservas?.call(),
-                      onLogout: () {
-                        // TODO: conectar con el endpoint/SDK de logout (Firebase Auth)
-                      },
+                      onLogout: () => logout(context),
                     ),
                     child: CircleAvatar(
                       radius: 22,

@@ -1,7 +1,10 @@
 import "package:flutter/material.dart";
+import "../../widgets/centered_form_layout.dart";
+import "../../widgets/form_error_text.dart";
+import "../../widgets/password_field.dart";
 import "../main_shell.dart";
-import "register_screen.dart";
 import "forgot_password_screen.dart";
+import "register_screen.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,16 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Controllers hold the text typed in each field (like a ref to an input in React).
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   String? _errorMessage;
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
-    // Free the controllers when the screen is destroyed.
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Alternative flow 1 of CU-01: empty fields, nothing is sent to the backend.
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _errorMessage = "Tenes que ingresar tu email y contraseña");
+      setState(() => _errorMessage = "Tenés que ingresar tu email y contraseña");
       return;
     }
 
@@ -47,83 +47,47 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    "Club Ramiro D'Agnone",
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 32),
-                  TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: "Contraseña",
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ForgotPasswordScreen(),
-                        ),
-                      ),
-                      child: const Text("¿Olvidaste tu contraseña?"),
-                    ),
-                  ),
-                  if (_errorMessage != null) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      _errorMessage!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
-                    ),
-                  ],
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: _onLoginPressed,
-                    child: const Text("Iniciar Sesión"),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                    ),
-                    child: const Text("¿Todavía no tenes cuenta? ¡Registráte!"),
-                  ),
-                ],
-              ),
+      body: CenteredFormLayout(
+        children: [
+          Text(
+            "Club Ramiro D'Agnone",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 32),
+          TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: "Email",
+              border: OutlineInputBorder(),
             ),
           ),
-        ),
+          const SizedBox(height: 16),
+          PasswordField(controller: _passwordController),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+              ),
+              child: const Text("¿Olvidaste tu contraseña?"),
+            ),
+          ),
+          FormErrorText(message: _errorMessage),
+          const SizedBox(height: 24),
+          FilledButton(
+            onPressed: _onLoginPressed,
+            child: const Text("Iniciar Sesión"),
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const RegisterScreen()),
+            ),
+            child: const Text("¿Todavía no tenés cuenta? ¡Registrate!"),
+          ),
+        ],
       ),
     );
   }

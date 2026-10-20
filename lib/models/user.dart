@@ -13,8 +13,25 @@ class User {
     required this.email,
   });
 
-  // Computed property: it is not stored, it is calculated when read.
   String get fullName => "$firstName $lastName";
+
+  String get initials => "${firstName[0]}${lastName[0]}".toUpperCase();
+
+  // Returns a copy of the user with some fields replaced.
+  // Email and id are intentionally not here: they cannot be edited.
+  User copyWith({
+    String? firstName,
+    String? lastName,
+    DateTime? birthDate,
+  }) {
+    return User(
+      id: id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      birthDate: birthDate ?? this.birthDate,
+      email: email,
+    );
+  }
 
   // Builds a User from the JSON map that the API will send us.
   factory User.fromJson(Map<String, dynamic> json) {
@@ -33,7 +50,7 @@ class User {
       "id": id,
       "first_name": firstName,
       "last_name": lastName,
-      "birth_date": birthDate.toIso8601String(),
+      "birth_date": birthDate.toIso8601String().split("T").first,
       "email": email,
     };
   }
