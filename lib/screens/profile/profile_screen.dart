@@ -4,6 +4,7 @@ import "../../utils/session.dart";
 import "profile_edit_form.dart";
 import "profile_header.dart";
 import "profile_info_card.dart";
+import "theme_mode_card.dart";
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -76,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.lock_outline),
-                    title: const Text("Seguridad"),
+                    title: const Text("Seguridad"),                    
                     subtitle: const Text("Cambiar contraseña"),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
@@ -84,6 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                  const ThemeModeCard(),
                 const SizedBox(height: 24),
                 OutlinedButton(
                   onPressed: () => logout(context),
