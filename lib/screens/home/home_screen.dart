@@ -1,13 +1,16 @@
 import "package:flutter/material.dart";
 import "../../models/reservation.dart";
+import "../../models/user.dart";
+import "../../models/venue.dart";
+import "../../services/reservation_service.dart";
+import "../../services/venue_service.dart";
 import "../../theme/app_theme.dart";
+import "../../utils/session.dart";
+import "../../widgets/profile_quick_sheet.dart";
 import "../../widgets/reservation_card.dart";
 import "../../widgets/venue_quick_card.dart";
-import "../../widgets/profile_quick_sheet.dart";
-import "../../utils/session.dart";
-import "../../models/user.dart";
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   // Callbacks para navegar a otras tabs sin acoplar el Home a la lógica del shell.
   final VoidCallback? onGoToReservas;
   final VoidCallback? onGoToSedes;
@@ -24,9 +27,39 @@ class HomeScreen extends StatelessWidget {
   });
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _reservationService = ReservationService();
+  final _venueService = VenueService();
+
+    late Future<List<Reservation>> _reservationsFuture;
+  late final Future<List<Venue>> _venuesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reservationsFuture = _reservationService.getUpcomingReservations();
+    _venuesFuture = _venueService.getVenues();
+    ReservationService.changes.addListener(_reloadReservations);
+  }
+
+  @override
+  void dispose() {
+    ReservationService.changes.removeListener(_reloadReservations);
+    super.dispose();
+  }
+
+  void _reloadReservations() {
+    setState(() {
+      _reservationsFuture = _reservationService.getUpcomingReservations();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final reservations = mockReservations;
-    final venues = mockVenues;
+    final user = widget.user;
 
     return SafeArea(
       child: CustomScrollView(
@@ -49,8 +82,8 @@ class HomeScreen extends StatelessWidget {
                     onTap: () => showProfileQuickSheet(
                       context,
                       user: user,
-                      onFullProfile: () => onGoToPerfil?.call(),
-                      onMyReservations: () => onGoToReservas?.call(),
+                      onFullProfile: () => widget.onGoToPerfil?.call(),
+                      onMyReservations: () => widget.onGoToReservas?.call(),
                       onLogout: () => logout(context),
                     ),
                     child: CircleAvatar(
@@ -72,24 +105,36 @@ class HomeScreen extends StatelessWidget {
             child: _SectionHeader(
               title: "Próximas reservas",
               actionLabel: "Ver todas",
-              onAction: onGoToReservas,
+              onAction: widget.onGoToReservas,
             ),
           ),
           SliverToBoxAdapter(
-            child: reservations.isEmpty
-                ? const _EmptyHint(text: "No tenés reservas próximas todavía.")
-                : SizedBox(
-                    height: 150,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: reservations.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        return ReservationCard(reservation: reservations[index]);
-                      },
-                    ),
+            child: FutureBuilder<List<Reservation>>(
+              future: _reservationsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const _LoadingBox();
+                }
+                final reservations = snapshot.data ?? [];
+                if (reservations.isEmpty) {
+                  return const _EmptyHint(
+                    text: "No tenés reservas próximas todavía.",
+                  );
+                }
+                return SizedBox(
+                  height: 150,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: reservations.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      return ReservationCard(reservation: reservations[index]);
+                    },
                   ),
+                );
+              },
+            ),
           ),
 
           // ---- Sección: Sedes ----
@@ -97,24 +142,32 @@ class HomeScreen extends StatelessWidget {
             child: _SectionHeader(
               title: "Sedes",
               actionLabel: "Ver todas",
-              onAction: onGoToSedes,
+              onAction: widget.onGoToSedes,
             ),
           ),
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 150,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: venues.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  return VenueQuickCard(venue: venues[index]);
-                },
-              ),
+            child: FutureBuilder<List<Venue>>(
+              future: _venuesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const _LoadingBox();
+                }
+                final venues = snapshot.data ?? [];
+                return SizedBox(
+                  height: 150,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: venues.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      return VenueQuickCard(venue: venues[index]);
+                    },
+                  ),
+                );
+              },
             ),
           ),
-
           // ---- Acceso rápido: Reservar ahora ----
           SliverToBoxAdapter(
             child: Padding(
@@ -128,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
-                  onPressed: onGoToSedes,
+                  onPressed: widget.onGoToSedes,
                   icon: const Icon(Icons.add),
                   label: const Text(
                     "Reservar una cancha",
@@ -187,6 +240,18 @@ class _EmptyHint extends StatelessWidget {
         ),
         child: Text(text, style: const TextStyle(color: Colors.grey)),
       ),
+    );
+  }
+}
+
+class _LoadingBox extends StatelessWidget {
+  const _LoadingBox();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 150,
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }

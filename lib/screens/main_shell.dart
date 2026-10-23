@@ -4,6 +4,8 @@ import "../services/user_service.dart";
 import "home/home_screen.dart";
 import "profile/profile_screen.dart";
 import "../theme/app_theme.dart";
+import "bookings/reservations_screen.dart";
+import "venues/venues_screen.dart";
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -58,8 +60,8 @@ class _MainShellState extends State<MainShell> {
         onGoToSedes: () => _goToTab(2),
         onGoToPerfil: () => _goToTab(3),
       ),
-      const _PlaceholderScreen(title: "Mis Reservas"),
-      const _PlaceholderScreen(title: "Sedes"),
+      const ReservationsScreen(),
+      VenuesScreen(onReservationCreated: () => _goToTab(1)),
       ProfileScreen(user: user, onUserUpdated: _updateUser),
     ];
 
@@ -78,23 +80,6 @@ class _MainShellState extends State<MainShell> {
           BottomNavigationBarItem(icon: Icon(Icons.stadium_outlined), label: "Sedes"),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Perfil"),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Text(
-          "$title (próximamente)",
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
       ),
     );
   }

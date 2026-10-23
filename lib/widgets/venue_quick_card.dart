@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "../models/reservation.dart";
+import "../models/venue.dart";
 
 class VenueQuickCard extends StatelessWidget {
   final Venue venue;

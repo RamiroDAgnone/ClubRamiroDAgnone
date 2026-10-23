@@ -4,9 +4,15 @@ import "../theme/app_theme.dart";
 
 class ReservationCard extends StatelessWidget {
   final Reservation reservation;
-  final VoidCallback? onTap; // el "onClick" de Flutter
+  final VoidCallback? onTap;
+  final double width;
 
-  const ReservationCard({super.key, required this.reservation, this.onTap});
+  const ReservationCard({
+    super.key,
+    required this.reservation,
+    this.onTap,
+    this.width = 250,
+  });
 
   Color _statusColor() {
     switch (reservation.status) {
@@ -39,7 +45,7 @@ class ReservationCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          width: 250,
+          width: width,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
