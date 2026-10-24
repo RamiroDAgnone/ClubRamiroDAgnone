@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "581681314187",
+    "project_id": "club-ramirodagnone",
+    "storage_bucket": "club-ramirodagnone.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581681314187:android:250277c529308595e5d78e",
+        "android_client_info": {
+          "package_name": "com.example.club_ramiro_dagnone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0axfJEe3PzKgwc3ZlV1Njc1f5DBVf48U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

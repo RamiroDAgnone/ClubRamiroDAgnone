@@ -2,16 +2,20 @@ import "package:flutter/material.dart";
 import "../../models/reservation.dart";
 import "../../widgets/reservation_card.dart";
 import "../../services/reservation_service.dart";
+import "../../services/booking_exceptions.dart";
+import "../../widgets/cancel_reservation_dialog.dart";
 
 // Loads and shows a list of reservations. Which ones depends on the loader.
 class ReservationList extends StatefulWidget {
   final Future<List<Reservation>> Function() loader;
   final String emptyText;
+  final bool canCancel;
 
   const ReservationList({
     super.key,
     required this.loader,
     required this.emptyText,
+    this.canCancel = false,
   });
 
   @override
@@ -19,6 +23,7 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
+  final _service = ReservationService();
   late Future<List<Reservation>> _future;
 
   @override
@@ -36,6 +41,32 @@ class _ReservationListState extends State<ReservationList> {
 
   void _reload() {
     setState(() => _future = widget.loader());
+  }
+
+  Future<void> _onCancel(Reservation reservation) async {
+    final confirmed = await showCancelReservationDialog(context, reservation);
+    if (!confirmed || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _service.cancelReservation(reservation);
+      // The list reloads by itself: the service bumps `changes`.
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Reserva cancelada con éxito")),
+      );
+    } on InvalidBookingException catch (e) {
+      // Alternative flow 4: the slot already started or finished.
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+      if (mounted) _reload();
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No se pudo cancelar la reserva en este momento. Intentá más tarde.",
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -81,9 +112,11 @@ class _ReservationListState extends State<ReservationList> {
           itemCount: reservations.length,
           separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
+          final reservation = reservations[index];
             return ReservationCard(
               reservation: reservations[index],
               width: double.infinity,
+              onCancel: widget.canCancel ? () => _onCancel(reservation) : null,
             );
           },
         );

@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "../../services/auth_exceptions.dart";
+import "../../services/auth_service.dart";
 import "../../utils/date_formatter.dart";
 import "../../widgets/centered_form_layout.dart";
 import "../../widgets/form_error_text.dart";
@@ -16,6 +18,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  
+  final _authService = AuthService();
+  bool _isLoading = false;
 
   DateTime? _birthDate;
   String? _errorMessage;
@@ -41,26 +46,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _onRegisterPressed() {
+    void _showError(String message) {
+    if (!mounted) return;
+    setState(() {
+      _errorMessage = message;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _onRegisterPressed() async {
     final hasEmptyField = _firstNameController.text.trim().isEmpty ||
         _lastNameController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty ||
         _birthDate == null;
 
-    // Alternative flow 1 of CU-03: incomplete data.
     if (hasEmptyField) {
-      setState(() => _errorMessage = "Debes ingresar todos los datos");
+      setState(() => _errorMessage = "Tenés que ingresar todos los datos");
       return;
     }
 
-    setState(() => _errorMessage = null);
+    setState(() {
+      _errorMessage = null;
+      _isLoading = true;
+    });
 
-    // Temporary: later this will call the API to create the account.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("¡Cuenta creada correctamente!")),
-    );
-    Navigator.of(context).pop();
+    try {
+      await _authService.register(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("¡Cuenta creada correctamente!")),
+      );
+      Navigator.of(context).pop();
+    } on EmailAlreadyInUseException {
+      _showError("Ya existe una cuenta registrada con ese email");
+    } on WeakPasswordException {
+      _showError("La contraseña tiene que tener al menos 6 caracteres");
+    } on InvalidEmailException {
+      _showError("El email no es válido");
+    } on NetworkException {
+      _showError("No hay conexión a internet. Revisá tu red e intentá de nuevo");
+    } catch (_) {
+      _showError("Hubo un error en el servidor. Intentá de nuevo más tarde");
+    }
   }
 
   @override
@@ -107,8 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           FormErrorText(message: _errorMessage),
           const SizedBox(height: 24),
           FilledButton(
-            onPressed: _onRegisterPressed,
-            child: const Text("Crear Cuenta"),
+            onPressed: _isLoading ? null : _onRegisterPressed,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text("Crear Cuenta"),
           ),
         ],
       ),

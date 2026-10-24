@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "../../services/auth_exceptions.dart";
+import "../../services/auth_service.dart";
 import "../../widgets/centered_form_layout.dart";
 import "../../widgets/form_error_text.dart";
 import "../../widgets/password_field.dart";
@@ -17,6 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final _authService = AuthService();
+  bool _isLoading = false;
+
   String? _errorMessage;
 
   @override
@@ -26,7 +31,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _onLoginPressed() {
+    void _showError(String message) {
+    if (!mounted) return;
+    setState(() {
+      _errorMessage = message;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _onLoginPressed() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -36,12 +49,25 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() => _errorMessage = null);
+    setState(() {
+      _errorMessage = null;
+      _isLoading = true;
+    });
 
-    // Temporary: later this will call the API (POST /auth/login).
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainShell()),
-    );
+    try {
+      await _authService.login(email: email, password: password);
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+      );
+    } on InvalidCredentialsException {
+      _showError("No se pudo iniciar sesión");
+    } on NetworkException {
+      _showError("No hay conexión a internet. Revisá tu red e intentá de nuevo");
+    } catch (e) {
+      debugPrint("Login error: $e");
+      _showError("Hubo un error en el servidor. Intentá de nuevo más tarde");
+    }
   }
 
   @override
@@ -77,8 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
           FormErrorText(message: _errorMessage),
           const SizedBox(height: 24),
           FilledButton(
-            onPressed: _onLoginPressed,
-            child: const Text("Iniciar Sesión"),
+            onPressed: _isLoading ? null : _onLoginPressed,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text("Iniciar Sesión"),
           ),
           const SizedBox(height: 8),
           TextButton(

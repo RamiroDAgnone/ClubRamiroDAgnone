@@ -1,10 +1,16 @@
 import "package:flutter/material.dart";
+import "package:firebase_core/firebase_core.dart";
+import "firebase_options.dart";
 import "screens/login/login_screen.dart";
-import "./screens/main_shell.dart";
 import "theme/app_theme.dart";
 import "theme/theme_controller.dart";
 
-void main() {
+Future<void> main() async {
+  // Needed before any async work that happens before runApp.
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ClubRamiroDAgnoneApp());
 }
 

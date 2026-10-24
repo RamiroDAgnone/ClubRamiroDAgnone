@@ -45,6 +45,7 @@ class _ReservationsScreenState extends State<ReservationsScreen> {
                     loader: _service.getUpcomingReservations,
                     emptyText:
                         "No se encontraron próximas reservas asociadas a tu cuenta",
+                    canCancel: true,
                   ),
                   ReservationList(
                     loader: _service.getReservationHistory,

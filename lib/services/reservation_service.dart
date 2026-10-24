@@ -77,4 +77,34 @@ class ReservationService {
     changes.value++;
     return reservation;
   }
+  
+  // Later: PATCH /bookings/{id}/cancel
+  Future<void> cancelReservation(Reservation reservation) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    // Like the real backend: it only trusts the id and checks its own data.
+    final index = MockDatabase.reservations.indexWhere(
+      (r) => r.id == reservation.id,
+    );
+    if (index == -1) {
+      throw const InvalidBookingException("La reserva ya no existe.");
+    }
+
+    final current = MockDatabase.reservations[index];
+    if (current.status != ReservationStatus.activa) {
+      throw const InvalidBookingException(
+        "La reserva ya fue cancelada o finalizó.",
+      );
+    }
+    // Alternative flow 4 of CU-10: past or in-progress slots.
+    if (!current.startAt.isAfter(DateTime.now())) {
+      throw const InvalidBookingException(
+        "No es posible cancelar turnos pasados o en curso.",
+      );
+    }
+
+    MockDatabase.reservations[index] =
+        current.copyWith(status: ReservationStatus.cancelada);
+    changes.value++;
+  }
 }

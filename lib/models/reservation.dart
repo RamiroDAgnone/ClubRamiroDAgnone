@@ -27,7 +27,24 @@ class Reservation {
     required this.status,
   });
 
+  // Returns a copy with some fields replaced.
+  Reservation copyWith({ReservationStatus? status}) {
+    return Reservation(
+      id: id,
+      spaceId: spaceId,
+      sportEmoji: sportEmoji,
+      sportLabel: sportLabel,
+      venueName: venueName,
+      courtCode: courtCode,
+      startAt: startAt,
+      endAt: endAt,
+      price: price,
+      status: status ?? this.status,
+    );
+  }
+  
   // Derived values, so the screens do not change.
   DateTime get date => DateTime(startAt.year, startAt.month, startAt.day);
   String get timeRange => "${formatTime(startAt)} - ${formatTime(endAt)}";
 }
+

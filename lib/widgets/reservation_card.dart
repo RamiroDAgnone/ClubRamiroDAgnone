@@ -5,12 +5,14 @@ import "../theme/app_theme.dart";
 class ReservationCard extends StatelessWidget {
   final Reservation reservation;
   final VoidCallback? onTap;
+  final VoidCallback? onCancel;
   final double width;
 
   const ReservationCard({
     super.key,
     required this.reservation,
     this.onTap,
+    this.onCancel,
     this.width = 250,
   });
 
@@ -83,6 +85,21 @@ class ReservationCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (onCancel != null) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: onCancel,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.danger,
+                      side: const BorderSide(color: AppTheme.danger),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    child: const Text("Cancelar reserva"),
+                  ),
+                ),
+              ],
               const SizedBox(height: 10),
               Text(reservation.venueName, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 2),
