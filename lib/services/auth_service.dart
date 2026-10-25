@@ -54,9 +54,44 @@ class AuthService {
     }
   }
 
+  // Sends the recovery email. If the email is not registered we pretend it
+  // worked, so nobody can use this screen to find out who has an account.
+  Future<void> sendPasswordReset(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") return;
+      throw _mapError(e);
+    }
+  }
+
+  // Firebase only changes the password if the login is recent, so we sign in
+  // again with the current password first (this also checks it is correct).
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+    final email = user?.email;
+    if (user == null || email == null) throw const InvalidCredentialsException();
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   // Translates Firebase error codes into our own exceptions.
   Exception _mapError(FirebaseAuthException e) {
     switch (e.code) {
+      case "too-many-requests":
+        return const TooManyRequestsException();
       case "email-already-in-use":
         return const EmailAlreadyInUseException();
       case "weak-password":

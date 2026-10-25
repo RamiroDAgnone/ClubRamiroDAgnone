@@ -21,3 +21,8 @@ class NetworkException implements Exception {
 class InvalidCredentialsException implements Exception {
   const InvalidCredentialsException();
 }
+
+// Firebase blocked the requests for a while (too many attempts).
+class TooManyRequestsException implements Exception {
+  const TooManyRequestsException();
+}

@@ -6,6 +6,7 @@ import "profile_edit_form.dart";
 import "profile_header.dart";
 import "profile_info_card.dart";
 import "theme_mode_card.dart";
+import "change_password_screen.dart";
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -94,9 +95,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: const Text("Seguridad"),                    
                     subtitle: const Text("Cambiar contraseña"),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Disponible próximamente")),
-                    ),
+                    onTap: () async {
+                      final changed = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (_) => const ChangePasswordScreen(),
+                        ),
+                      );
+                      if (changed == true) _showSnack("Contraseña actualizada");
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),
