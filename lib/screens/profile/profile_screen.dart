@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../../services/auth_exceptions.dart";
 import "../../models/user.dart";
 import "../../utils/session.dart";
 import "profile_edit_form.dart";
@@ -26,12 +27,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
 
   Future<void> _onSave(User updated) async {
-    await widget.onUserUpdated(updated);
+    try {
+      await widget.onUserUpdated(updated);
+    } on NetworkException {
+      _showSnack("No hay conexión a internet. Revisá tu red e intentá de nuevo");
+      return;
+    } catch (_) {
+      _showSnack("Hubo un error en el servidor. Intentá de nuevo más tarde");
+      return;
+    }
     // The screen may have been closed while we were waiting.
     if (!mounted) return;
     setState(() => _isEditing = false);
+    _showSnack("Perfil actualizado correctamente");
+  }
+
+  void _showSnack(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Perfil actualizado correctamente")),
+      SnackBar(content: Text(message)),
     );
   }
 

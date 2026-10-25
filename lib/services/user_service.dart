@@ -1,25 +1,22 @@
 import "../models/user.dart";
+import "api_client.dart";
 
 // Single entry point for everything related to the user's data.
-// the Python REST API (which talks to PostgreSQL) and no screen will change.
 class UserService {
-  // Temporary mock data.
-  User _currentUser = User(
-    id: "1",
-    firstName: "Ramiro",
-    lastName: "D'Agnone",
-    birthDate: DateTime(2001, 7, 28),
-    email: "ramiro.dagnone@mail.com",
-  );
+  final _api = ApiClient();
 
-  // Later: GET /users/me
   Future<User> getCurrentUser() async {
-    return _currentUser;
+    final json = await _api.get("/users/me");
+    return User.fromJson(json);
   }
 
-  // Later: PUT /users/me
+  // Only these 3 fields can be edited: email and role are ignored by the API.
   Future<User> updateUser(User updated) async {
-    _currentUser = updated;
-    return _currentUser;
+    final json = await _api.put("/users/me", {
+      "first_name": updated.firstName,
+      "last_name": updated.lastName,
+      "birth_date": updated.toJson()["birth_date"],
+    });
+    return User.fromJson(json);
   }
 }

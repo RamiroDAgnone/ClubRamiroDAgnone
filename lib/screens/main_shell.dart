@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../services/auth_exceptions.dart";
 import "../models/user.dart";
 import "../services/user_service.dart";
 import "home/home_screen.dart";
@@ -6,6 +7,8 @@ import "profile/profile_screen.dart";
 import "../theme/app_theme.dart";
 import "bookings/reservations_screen.dart";
 import "venues/venues_screen.dart";
+import "../utils/session.dart";
+import "../widgets/centered_form_layout.dart";
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -20,6 +23,7 @@ class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
   // null while the user is still loading.
   User? _user;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -28,10 +32,20 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _loadUser() async {
-    final user = await _userService.getCurrentUser();
-    // The screen may have been closed while we were waiting.
-    if (!mounted) return;
-    setState(() => _user = user);
+    setState(() => _errorMessage = null);
+    try {
+      final user = await _userService.getCurrentUser();
+      if (!mounted) return;
+      setState(() => _user = user);
+    } on NetworkException {
+      if (!mounted) return;
+      setState(() => _errorMessage =
+          "No hay conexión a internet. Revisá tu red e intentá de nuevo");
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _errorMessage =
+          "Hubo un error en el servidor. Intentá de nuevo más tarde");
+    }
   }
 
   Future<void> _updateUser(User updated) async {
@@ -50,7 +64,24 @@ class _MainShellState extends State<MainShell> {
 
     // While the user loads we show a spinner instead of the app.
     if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      final error = _errorMessage;
+      if (error == null) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      return Scaffold(
+        body: CenteredFormLayout(
+          children: [
+            Text(error, textAlign: TextAlign.center),
+            const SizedBox(height: 24),
+            FilledButton(onPressed: _loadUser, child: const Text("Reintentar")),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => logout(context),
+              child: const Text("Cerrar sesión"),
+            ),
+          ],
+        ),
+      );
     }
 
     final screens = [

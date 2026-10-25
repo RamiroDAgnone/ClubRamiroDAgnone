@@ -72,9 +72,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      await _authService.register(
+        await _authService.register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        birthDate: _birthDate!,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

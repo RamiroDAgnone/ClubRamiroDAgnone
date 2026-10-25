@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     database_url: str
+    firebase_credentials_path: str
 
-    # Reads the values from the .env file (or from real environment variables).
     model_config = SettingsConfigDict(env_file=".env")
 
 

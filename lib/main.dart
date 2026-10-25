@@ -1,7 +1,9 @@
-import "package:flutter/material.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_core/firebase_core.dart";
+import "package:flutter/material.dart";
 import "firebase_options.dart";
 import "screens/login/login_screen.dart";
+import "screens/main_shell.dart";
 import "theme/app_theme.dart";
 import "theme/theme_controller.dart";
 
@@ -11,11 +13,16 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const ClubRamiroDAgnoneApp());
+  // Waits until Firebase restores the saved session (on web it is async,
+  // so reading currentUser directly could still return null).
+  final user = await FirebaseAuth.instance.authStateChanges().first;
+  runApp(ClubRamiroDAgnoneApp(isLoggedIn: user != null));
 }
 
 class ClubRamiroDAgnoneApp extends StatelessWidget {
-  const ClubRamiroDAgnoneApp({super.key});
+  final bool isLoggedIn;
+
+  const ClubRamiroDAgnoneApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +36,7 @@ class ClubRamiroDAgnoneApp extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: mode,
-          home: const LoginScreen(),
+          home: isLoggedIn ? const MainShell() : const LoginScreen(),
         );
       },
     );

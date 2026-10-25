@@ -60,6 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const MainShell()),
       );
+    }on InvalidEmailException {
+      _showError("El email no es válido");
     } on InvalidCredentialsException {
       _showError("No se pudo iniciar sesión");
     } on NetworkException {
