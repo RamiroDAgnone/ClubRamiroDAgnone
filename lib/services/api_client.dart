@@ -1,23 +1,26 @@
 import "dart:async";
 import "dart:convert";
 import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/foundation.dart";
+//import "package:flutter/foundation.dart";
 import "package:http/http.dart" as http;
 import "api_exceptions.dart";
 import "auth_exceptions.dart";
 
 // The Android emulator reaches the PC through 10.0.2.2, not 127.0.0.1.
-String get apiBaseUrl {
+/*String get apiBaseUrl {
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     return "http://10.0.2.2:8000";
   }
   return "http://127.0.0.1:8000";
-}
+}*/
+
+// Production API hosted on Render.
+const apiBaseUrl = "https://clubramirodagnone.onrender.com";
 
 // Single entry point to call the Python REST API.
 // Adds the Firebase token to every request and translates the failures.
 class ApiClient {
-  static const _timeout = Duration(seconds: 10);
+  static const _timeout = Duration(seconds: 60);
 
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
     final data = await _send(
