@@ -51,7 +51,6 @@ class _ConfirmReservationScreenState extends State<ConfirmReservationScreen> {
 
     try {
       await _service.createReservation(
-        venue: widget.venue,
         space: widget.space,
         slot: widget.slot,
       );

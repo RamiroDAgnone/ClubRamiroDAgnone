@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.routers import users
+from app.routers import users, venues, sport_spaces, bookings
 
 from app.database import get_db
 
@@ -13,6 +13,9 @@ app = FastAPI(
     version="0.1.0",
 )
 app.include_router(users.router)
+app.include_router(venues.router)
+app.include_router(sport_spaces.router)
+app.include_router(bookings.router)
 
 from fastapi.middleware.cors import CORSMiddleware
 

@@ -56,7 +56,7 @@ class ReservationCard extends StatelessWidget {
               // Fila superior: emoji + deporte + badge de estado
               Row(
                 children: [
-                  Text(reservation.sportEmoji, style: const TextStyle(fontSize: 20)),
+                  //Text(reservation.sportEmoji, style: const TextStyle(fontSize: 20)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

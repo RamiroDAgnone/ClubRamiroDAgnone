@@ -115,6 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return const _LoadingBox();
                 }
+                if (snapshot.hasError) {
+                  return const _EmptyHint(text: "No pudimos cargar tus reservas.");
+                }
                 final reservations = snapshot.data ?? [];
                 if (reservations.isEmpty) {
                   return const _EmptyHint(
@@ -122,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
                 return SizedBox(
-                  height: 150,
+                  height: 180,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -152,9 +155,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return const _LoadingBox();
                 }
+                if (snapshot.hasError) {
+                  return const _EmptyHint(text: "No pudimos cargar las sedes.");
+                }
                 final venues = snapshot.data ?? [];
                 return SizedBox(
-                  height: 150,
+                  height: 160,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 20),

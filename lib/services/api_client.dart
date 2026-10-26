@@ -19,24 +19,42 @@ String get apiBaseUrl {
 class ApiClient {
   static const _timeout = Duration(seconds: 10);
 
-  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) {
-    return _send(
+  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
+    final data = await _send(
       (uri, headers) => http.post(uri, headers: headers, body: jsonEncode(body)),
       path,
     );
+    return data;
   }
-    Future<Map<String, dynamic>> get(String path) {
-    return _send((uri, headers) => http.get(uri, headers: headers), path);
+  
+  Future<Map<String, dynamic>> get(String path) async {
+    final data = await _send((uri, headers) => http.get(uri, headers: headers), path);
+    return data;
   }
 
-  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body) {
-    return _send(
+  // For endpoints that answer with a JSON list (GET /venues...).
+  Future<List<dynamic>> getList(String path) async {
+    final data = await _send((uri, headers) => http.get(uri, headers: headers), path);
+    return data as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body) async {
+    final data = await _send(
       (uri, headers) => http.put(uri, headers: headers, body: jsonEncode(body)),
       path,
     );
+    return data;
   }
 
-  Future<Map<String, dynamic>> _send(
+  Future<Map<String, dynamic>> patch(String path) async {
+    final data = await _send(
+      (uri, headers) => http.patch(uri, headers: headers),
+      path,
+    );
+    return data as Map<String, dynamic>;
+  }
+
+  Future<dynamic> _send(
     Future<http.Response> Function(Uri uri, Map<String, String> headers) call,
     String path,
   ) async {
@@ -58,7 +76,7 @@ class ApiClient {
     }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      return jsonDecode(utf8.decode(response.bodyBytes));
     }
     if (response.statusCode == 401) throw const ApiUnauthorizedException();
     if (response.statusCode == 409) throw const ApiConflictException();
