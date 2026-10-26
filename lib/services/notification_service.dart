@@ -1,12 +1,14 @@
 import "package:firebase_messaging/firebase_messaging.dart";
 import "package:flutter/foundation.dart";
 import "api_client.dart";
-
+import "package:firebase_auth/firebase_auth.dart";
 // Single entry point for push notifications (Firebase Cloud Messaging).
 class NotificationService {
   final _api = ApiClient();
 
   Future<void> registerDevice() async {
+    final idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+    debugPrint("ID token: $idToken");
     // Web needs extra setup (VAPID key + service worker): Android only for now.
     if (kIsWeb) return;
 

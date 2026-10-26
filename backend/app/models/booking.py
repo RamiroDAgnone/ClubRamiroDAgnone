@@ -28,3 +28,4 @@ class Booking(Base):
         DateTime(timezone=True), server_default=func.now()
     )
     cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reminder_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
