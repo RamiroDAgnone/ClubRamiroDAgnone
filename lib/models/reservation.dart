@@ -1,5 +1,5 @@
 import "../utils/date_formatter.dart";
-import "sport_space.dart";
+//import "sport_space.dart";
 
 enum ReservationStatus { activa, completada, cancelada }
 

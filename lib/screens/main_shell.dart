@@ -9,6 +9,7 @@ import "bookings/reservations_screen.dart";
 import "venues/venues_screen.dart";
 import "../utils/session.dart";
 import "../widgets/centered_form_layout.dart";
+import "../services/notification_service.dart";
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,6 +20,7 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   final _userService = UserService();
+  final _notificationService = NotificationService();
 
   int _selectedIndex = 0;
   // null while the user is still loading.
@@ -37,6 +39,7 @@ class _MainShellState extends State<MainShell> {
       final user = await _userService.getCurrentUser();
       if (!mounted) return;
       setState(() => _user = user);
+      _notificationService.registerDevice();
     } on NetworkException {
       if (!mounted) return;
       setState(() => _errorMessage =
