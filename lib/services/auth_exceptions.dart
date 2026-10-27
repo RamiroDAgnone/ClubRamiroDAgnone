@@ -26,3 +26,8 @@ class InvalidCredentialsException implements Exception {
 class TooManyRequestsException implements Exception {
   const TooManyRequestsException();
 }
+
+// The user closed the Google window without choosing an account.
+class SignInCancelledException implements Exception {
+  const SignInCancelledException();
+}

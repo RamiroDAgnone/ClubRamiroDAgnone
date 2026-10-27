@@ -10,6 +10,8 @@ import "venues/venues_screen.dart";
 import "../utils/session.dart";
 import "../widgets/centered_form_layout.dart";
 import "../services/notification_service.dart";
+import "../services/api_exceptions.dart";
+import "profile/complete_profile_screen.dart";
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -44,7 +46,14 @@ class _MainShellState extends State<MainShell> {
       if (!mounted) return;
       setState(() => _errorMessage =
           "No hay conexión a internet. Revisá tu red e intentá de nuevo");
-    } catch (_) {
+    } on ApiServerException catch (e) {
+        if (!mounted) return;
+        if (e.statusCode == 404) {
+          await _completeProfile();
+          return;
+        }
+    }
+      catch (_) {
       if (!mounted) return;
       setState(() => _errorMessage =
           "Hubo un error en el servidor. Intentá de nuevo más tarde");
@@ -59,6 +68,19 @@ class _MainShellState extends State<MainShell> {
 
   void _goToTab(int index) {
     setState(() => _selectedIndex = index);
+  }
+  
+  // First Google login: Firebase account exists but there is no profile yet.
+  Future<void> _completeProfile() async {
+    final done = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const CompleteProfileScreen()),
+    );
+    if (!mounted) return;
+    if (done == true) {
+      _loadUser();
+    } else {
+      logout(context);
+    }
   }
 
   @override

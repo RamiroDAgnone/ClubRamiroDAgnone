@@ -72,6 +72,28 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _onGoogleLoginPressed() async {
+    setState(() {
+      _errorMessage = null;
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+      );
+    } on SignInCancelledException {
+      if (mounted) setState(() => _isLoading = false);
+    } on NetworkException {
+      _showError("No hay conexión a internet. Revisá tu red e intentá de nuevo");
+    } catch (e) {
+      debugPrint("Google login error: $e");
+      _showError("Hubo un error en el servidor. Intentá de nuevo más tarde");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,6 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Text("Iniciar Sesión"),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _isLoading ? null : _onGoogleLoginPressed,
+            icon: const Icon(Icons.g_mobiledata, size: 28),
+            label: const Text("Continuar con Google"),
           ),
           const SizedBox(height: 8),
           TextButton(

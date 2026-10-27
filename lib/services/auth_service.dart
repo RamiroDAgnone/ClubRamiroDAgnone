@@ -1,6 +1,7 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "auth_exceptions.dart";
 import "api_client.dart";
+import "package:flutter/foundation.dart";
 
 // Single entry point for authentication. Wraps Firebase Auth.
 class AuthService {
@@ -50,6 +51,27 @@ class AuthService {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
+      throw _mapError(e);
+    }
+  }
+  
+  // Same call registers and logs in: Firebase creates the account the first time.
+  Future<void> signInWithGoogle() async {
+    final provider = GoogleAuthProvider();
+    try {
+      if (kIsWeb) {
+        await _auth.signInWithPopup(provider);
+      } else {
+        await _auth.signInWithProvider(provider);
+      }
+    } on FirebaseAuthException catch (e) {
+      const cancelCodes = [
+        "popup-closed-by-user",
+        "cancelled-popup-request",
+        "canceled",
+        "web-context-canceled",
+      ];
+      if (cancelCodes.contains(e.code)) throw const SignInCancelledException();
       throw _mapError(e);
     }
   }

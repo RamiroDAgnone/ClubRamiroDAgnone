@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../main_shell.dart";
 import "../../services/auth_exceptions.dart";
 import "../../services/auth_service.dart";
 import "../../utils/date_formatter.dart";
@@ -96,6 +97,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showError("Hubo un error en el servidor. Intentá de nuevo más tarde");
     }
   }
+  
+  Future<void> _onGoogleRegisterPressed() async {
+    setState(() {
+      _errorMessage = null;
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      if (!mounted) return;
+      // Register was pushed on top of Login: remove both.
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (route) => false,
+      );
+    } on SignInCancelledException {
+      if (mounted) setState(() => _isLoading = false);
+    } on NetworkException {
+      _showError("No hay conexión a internet. Revisá tu red e intentá de nuevo");
+    } catch (e) {
+      debugPrint("Google register error: $e");
+      _showError("Hubo un error en el servidor. Intentá de nuevo más tarde");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +180,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Text("Crear Cuenta"),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _isLoading ? null : _onGoogleRegisterPressed,
+            icon: const Icon(Icons.g_mobiledata, size: 28),
+            label: const Text("Registrarse con Google"),
           ),
         ],
       ),

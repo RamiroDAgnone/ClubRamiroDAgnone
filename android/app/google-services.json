@@ -12,7 +12,20 @@
           "package_name": "com.example.club_ramiro_dagnone"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "581681314187-2fuhtlsc4tqdjg1dfli2f5i3tdaaje25.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.club_ramiro_dagnone",
+            "certificate_hash": "7afae59d6f20c740c9e3977f70639794ff543684"
+          }
+        },
+        {
+          "client_id": "581681314187-m8hd0n38ll9nhs82aro8bdo2o9f880pa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC0axfJEe3PzKgwc3ZlV1Njc1f5DBVf48U"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581681314187-m8hd0n38ll9nhs82aro8bdo2o9f880pa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
