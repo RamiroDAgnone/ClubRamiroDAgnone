@@ -103,6 +103,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(title: const Text("Crear Cuenta")),
       body: CenteredFormLayout(
         children: [
+          Image.asset(
+            "assets/images/logo.png",
+            width: 150,
+            height: 150,
+            fit: BoxFit.contain,
+          ),
           TextField(
             controller: _firstNameController,
             decoration: const InputDecoration(

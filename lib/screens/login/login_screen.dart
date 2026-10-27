@@ -77,6 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: CenteredFormLayout(
         children: [
+          Image.asset(
+            "assets/images/logo.png",
+            width: 150,
+            height: 150,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 16),
           Text(
             "Club Ramiro D'Agnone",
             textAlign: TextAlign.center,
