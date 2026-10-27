@@ -10,6 +10,7 @@ from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.schemas.device_token import DeviceTokenCreate
 from app.notifications import send_to_user
 from app.reminders import send_hourly_reminders
+from app.reminders import send_upcoming_reminders
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -110,7 +111,7 @@ def register_device_token(
 
 @router.post("/me/test-reminders")
 def test_reminders(firebase_uid: str = Depends(get_firebase_uid)):
-    return {"processed": send_hourly_reminders()}
+    return {"processed": send_upcoming_reminders()}
 
 @router.post("/me/test-notification")
 def test_notification(

@@ -252,6 +252,4 @@ El archivo queda en `build/app/outputs/flutter-apk/app-release.apk`.
 
 ## Estado del proyecto
 
-Implementado: registro, login y recuperación de contraseña, perfil, sedes, canchas, disponibilidad, reservas (crear, listar, cancelar, historial), manejo de errores, backend y base de datos desplegados en Render, registro de dispositivos y notificación de prueba.
-
-Pendiente / en desarrollo: ejecución automática (scheduler) de los recordatorios horarios, estado "En curso" en la UI, inicio de sesión con Google.
+Implementado: registro, login y recuperación de contraseña, perfil, sedes, canchas, disponibilidad, reservas (crear, listar, cancelar, historial), manejo de errores, backend y base de datos desplegados en Render, registro de dispositivos y notificaciónes.
