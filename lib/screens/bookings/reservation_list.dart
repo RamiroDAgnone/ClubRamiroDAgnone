@@ -40,7 +40,9 @@ class _ReservationListState extends State<ReservationList> {
   }
 
   void _reload() {
-    setState(() => _future = widget.loader());
+    setState(() {
+      _future = widget.loader();
+    });
   }
 
   Future<void> _onCancel(Reservation reservation) async {

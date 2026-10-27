@@ -25,7 +25,9 @@ class _VenuesScreenState extends State<VenuesScreen> {
   }
 
   void _reload() {
-    setState(() => _future = _service.getVenues());
+    setState((){ 
+    _future = _service.getVenues();
+    });
   }
 
   Future<void> _onViewCourts(Venue venue) async {

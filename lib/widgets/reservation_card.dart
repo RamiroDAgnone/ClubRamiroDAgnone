@@ -17,9 +17,11 @@ class ReservationCard extends StatelessWidget {
   });
 
   Color _statusColor() {
-    switch (reservation.status) {
+    switch (reservation.displayStatus) {
       case ReservationStatus.activa:
         return AppTheme.accent;
+      case ReservationStatus.enCurso:
+        return Colors.orange;
       case ReservationStatus.completada:
         return Colors.grey;
       case ReservationStatus.cancelada:
@@ -28,9 +30,11 @@ class ReservationCard extends StatelessWidget {
   }
 
   String _statusLabel() {
-    switch (reservation.status) {
+    switch (reservation.displayStatus) {
       case ReservationStatus.activa:
         return "Activa";
+      case ReservationStatus.enCurso:
+        return "En curso";
       case ReservationStatus.completada:
         return "Completada";
       case ReservationStatus.cancelada:
@@ -85,7 +89,7 @@ class ReservationCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (onCancel != null) ...[
+              if (onCancel != null && reservation.canBeCancelled) ...[
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,

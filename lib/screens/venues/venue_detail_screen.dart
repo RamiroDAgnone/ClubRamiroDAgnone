@@ -25,7 +25,9 @@ class _VenueDetailScreenState extends State<VenueDetailScreen> {
   }
 
   void _reload() {
-    setState(() => _future = _service.getSpacesByVenue(widget.venue.id));
+    setState(() {
+    _future = _service.getSpacesByVenue(widget.venue.id);
+    });
   }
 
   Future<void> _onViewSchedules(

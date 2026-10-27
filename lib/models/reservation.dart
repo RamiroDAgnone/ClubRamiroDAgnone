@@ -1,7 +1,7 @@
 import "../utils/date_formatter.dart";
 //import "sport_space.dart";
 
-enum ReservationStatus { activa, completada, cancelada }
+enum ReservationStatus { activa, enCurso, completada, cancelada }
 
 class Reservation {
   final String id;
@@ -52,7 +52,14 @@ class Reservation {
     );
   }
   
-  // Derived values, so the screens do not change.
+  ReservationStatus get displayStatus {
+    if (status == ReservationStatus.activa && !startAt.isAfter(DateTime.now())) {
+      return ReservationStatus.enCurso;
+    }
+    return status;
+  }
+
+  bool get canBeCancelled => displayStatus == ReservationStatus.activa;
   DateTime get date => DateTime(startAt.year, startAt.month, startAt.day);
   String get timeRange => "${formatTime(startAt)} - ${formatTime(endAt)}";
 }
