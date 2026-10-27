@@ -9,7 +9,6 @@ from app.models import User, DeviceToken
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.schemas.device_token import DeviceTokenCreate
 from app.notifications import send_to_user
-from app.reminders import send_hourly_reminders
 from app.reminders import send_upcoming_reminders
 
 router = APIRouter(prefix="/users", tags=["users"])
